@@ -1,0 +1,46 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "POS Profile",
+  "enabled": 1,
+  "modified": "2024-08-16 15:51:15.127715",
+  "module": "Formost",
+  "name": "POS Profile",
+  "script": "frappe.ui.form.on('POS Profile', {\n\trefresh(frm) {\n\t\tfrm.fields_dict['print_format'].get_query = function() {\n            return {\n                filters: {\n                    // Your filter conditions here\n                   doc_type: 'Sales Invoice'\n                }\n            };\n        }\n\t}\n})",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "POS Invoice",
+  "enabled": 1,
+  "modified": "2024-08-16 15:51:47.861665",
+  "module": "Formost",
+  "name": "POS Invoice",
+  "script": "frappe.ui.form.on('POS Invoice', {\n\trefresh(frm) {\n\t     \n        var roles = frappe.user_roles;\n        if (roles.includes('POS Billing') || roles.includes('POS Cash')) {\n            frm.toggle_display('accounting_dimensions_section', false);\n            frm.toggle_display('address_and_contact', false);\n            frm.toggle_display('currency_and_price_list', false);\n            frm.toggle_display('sec_warehouse', false);\n            frm.toggle_display('pricing_rule_details', false);\n            frm.toggle_display('time_sheet_list', false);\n            frm.toggle_display('more_info', false);\n            frm.toggle_display('more_information', false);\n            frm.toggle_display('edit_printing_settings', false);\n            frm.toggle_display('column_break4', false);\n            frm.toggle_display('subscription_section', false);\n            frm.toggle_display('sales_team_section_break', false);\n            frm.toggle_display('terms_section_break', false);\n            frm.toggle_display('section_break2', false);\n            frm.toggle_display('advances_section', false);\n            // frm.toggle_display('payments_section', false);\n            // frm.toggle_display('section_break_49', false);\n            \n        }\n\n\t}\n})",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Purchase Receipt",
+  "enabled": 1,
+  "modified": "2024-08-16 15:51:24.372503",
+  "module": "Formost",
+  "name": "Purchase Receipt Form",
+  "script": "frappe.ui.form.on('Purchase Receipt', {\n    \n    validate: function (frm) {\n        if (frm.doc.items) {\n            // validate if selling rate is less than the purchase rate\n            frm.doc.items.forEach(function (item) {\n                if (item.custom_selling_price && item.rate && item.custom_selling_price < item.rate) {\n                    frappe.throw(__('MRP cannot be lesser than Buying Rate'));\n                }\n            });\n        }\n    },\n\n    \n    on_submit: function(frm){\n        frm.doc.items.forEach(row => {\n            var item_price = frappe.model.get_new_doc('Item Price')\n            item_price.item_code = row.item_code\n            item_price.price_list = \"Standard Selling\" \n            item_price.batch_no = row.batch_no || \"\"\n            item_price.price_list_rate = row.custom_selling_price\n            item_price.valid_from = frm.doc.posting_date   \n            frappe.call({method:\"frappe.client.save\", args:{doc:item_price}})\n    })\n    }\n  })",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Purchase Receipt",
+  "enabled": 1,
+  "modified": "2024-08-16 15:51:55.671315",
+  "module": "Formost",
+  "name": "Serial No Filter",
+  "script": "frappe.ui.form.on('Purchase Receipt', {\n setup(frm) {\n      frm.set_query('custom_serial_nos', () => {\n        return {\n          filters: {\n            'purchase_document_type': \"Purchase Receipt\",\n            'purchase_document_no' :frm.doc.name\n          }\n        };\n      });\n     }\n \n})",
+  "view": "Form"
+ }
+]

@@ -213,3 +213,18 @@ app_license = "MIT"
 # auth_hooks = [
 # 	"formost.auth.validate"
 # ]
+
+fixtures = [
+    {
+        "doctype": "Server Script",
+        "filters": [
+            ["module", "=", "Formost"]
+        ]
+    },
+    {
+        "doctype": "Client Script",
+        "filters": [
+            ["module", "=", "Formost"]
+        ]
+    }
+]
